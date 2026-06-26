@@ -1,0 +1,34 @@
+# ── Secrets & environment ────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.key
+
+# ── Python ───────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ── Logs & runtime ───────────────────────────────────────────────────────
+*.log
+server.out.log
+server.err.log
+
+# ── Local tooling ────────────────────────────────────────────────────────
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ── Archives / backups (kept out of the repo) ────────────────────────────
+*.zip
+*.tar
+*.tar.gz

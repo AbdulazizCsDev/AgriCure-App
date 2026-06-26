@@ -1,0 +1,17 @@
+{
+  "plant": "Apple Tree",
+  "disease_labels": [
+    "Apple Tree | Mosaic Disease",
+    "Apple Tree | Rust",
+    "Apple Tree | Scab",
+    "Apple Tree | Spider Mite"
+  ],
+  "disease_to_idx": {
+    "Apple Tree | Mosaic Disease": 0,
+    "Apple Tree | Rust": 1,
+    "Apple Tree | Scab": 2,
+    "Apple Tree | Spider Mite": 3
+  },
+  "best_val_loss": 0.21846726536750793,
+  "best_epoch": 6
+}

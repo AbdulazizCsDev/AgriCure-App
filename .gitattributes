@@ -1,0 +1,13 @@
+# Store large model weights with Git LFS
+*.pth filter=lfs diff=lfs merge=lfs -text
+*.pt  filter=lfs diff=lfs merge=lfs -text
+*.onnx filter=lfs diff=lfs merge=lfs -text
+
+# Normalize line endings for text sources
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.sql  text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf

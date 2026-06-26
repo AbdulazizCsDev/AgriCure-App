@@ -1,0 +1,15 @@
+{
+  "plant": "Cassava",
+  "disease_labels": [
+    "Cassava | Brown Leaf Spot",
+    "Cassava | Mosaic",
+    "Cassava | Root Rot"
+  ],
+  "disease_to_idx": {
+    "Cassava | Brown Leaf Spot": 0,
+    "Cassava | Mosaic": 1,
+    "Cassava | Root Rot": 2
+  },
+  "best_val_loss": 0.06906883616228493,
+  "best_epoch": 22
+}

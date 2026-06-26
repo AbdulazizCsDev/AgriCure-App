@@ -1,0 +1,15 @@
+{
+  "plant": "Pear Tree",
+  "disease_labels": [
+    "Pear Tree | Blister Mites",
+    "Pear Tree | Powdery Mildew",
+    "Pear Tree | Rust"
+  ],
+  "disease_to_idx": {
+    "Pear Tree | Blister Mites": 0,
+    "Pear Tree | Powdery Mildew": 1,
+    "Pear Tree | Rust": 2
+  },
+  "best_val_loss": 0.014616560190916061,
+  "best_epoch": 8
+}

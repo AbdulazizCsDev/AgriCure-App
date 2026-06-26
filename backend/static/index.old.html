@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AgroCure · Plant Disease Diagnosis</title>
+<style>
+  :root{
+    --bg:#0a1410; --panel:#10211a; --panel-2:#16302593; --line:#1f4133;
+    --green:#34d399; --green-2:#10b981; --green-deep:#059669;
+    --text:#eaf6ef; --muted:#8fb3a2; --danger:#f87171; --warn:#fbbf24;
+    --radius:20px; --shadow:0 20px 60px -20px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #103a2a 0%, transparent 55%),
+      radial-gradient(900px 500px at -10% 110%, #0d2c20 0%, transparent 50%),
+      var(--bg);
+    color:var(--text); min-height:100vh; line-height:1.5;
+    padding:32px 18px 64px;
+  }
+  .wrap{max-width:1040px;margin:0 auto}
+
+  /* Header */
+  header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+  .logo{
+    width:48px;height:48px;border-radius:14px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--green),var(--green-deep));
+    box-shadow:0 8px 24px -6px var(--green-deep);font-size:26px;
+  }
+  h1{font-size:1.5rem;font-weight:700;letter-spacing:-.5px}
+  .tag{color:var(--muted);font-size:.9rem}
+  .badges{margin:18px 0 26px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:600
+  }
+  .badge b{color:var(--green)}
+
+  /* Layout */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:linear-gradient(180deg,var(--panel),#0d1b15);
+    border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px;
+  }
+  .card h2{font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+
+  /* Dropzone */
+  .drop{
+    border:2px dashed var(--line);border-radius:16px;padding:30px 18px;text-align:center;
+    cursor:pointer;transition:.2s;background:#0c1813;position:relative;overflow:hidden;
+  }
+  .drop:hover,.drop.over{border-color:var(--green);background:#0f2218}
+  .drop .ico{font-size:42px;margin-bottom:8px;filter:grayscale(.2)}
+  .drop p{color:var(--muted);font-size:.9rem}
+  .drop p b{color:var(--text)}
+  .guide{display:flex;gap:10px;margin-top:14px}
+  .g-col{flex:1;background:#0c1813;border:1px solid var(--line);border-radius:12px;
+    padding:10px 12px;font-size:.76rem;color:var(--muted);line-height:1.7}
+  .g-col.ok{border-color:#1f6b43}
+  .g-col.no{border-color:#5c3a1f}
+  .g-head{font-weight:700;color:var(--text);margin-bottom:4px;font-size:.8rem}
+
+  .tip{background:#2a2411;border:1px solid #6b5a1f;color:var(--warn);
+    padding:10px 12px;border-radius:10px;font-size:.82rem;margin-bottom:14px;display:none}
+
+  #preview{display:none;width:100%;border-radius:14px;margin-top:16px;
+    border:1px solid var(--line);aspect-ratio:1/1;object-fit:cover}
+  .btn{
+    margin-top:16px;width:100%;border:none;cursor:pointer;
+    background:linear-gradient(135deg,var(--green),var(--green-deep));
+    color:#04130d;font-weight:800;font-size:1rem;padding:14px;border-radius:12px;
+    transition:.2s;letter-spacing:.3px;
+  }
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  /* Result */
+  .result-empty{color:var(--muted);text-align:center;padding:40px 10px}
+  .result-empty .ico{font-size:46px;opacity:.5;margin-bottom:10px}
+  #result{display:none}
+  .verdict{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .verdict .disease{font-size:1.7rem;font-weight:800;letter-spacing:-.5px}
+  .plant-chip{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--green);
+    padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:700
+  }
+  .full-label{color:var(--muted);font-size:.85rem;margin-bottom:18px}
+
+  .meter{margin:14px 0}
+  .meter .row{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px}
+  .meter .row span:last-child{font-weight:700}
+  .track{height:10px;border-radius:999px;background:#0c1813;overflow:hidden;border:1px solid var(--line)}
+  .fill{height:100%;width:0;border-radius:999px;transition:width 1s cubic-bezier(.2,.8,.2,1);
+    background:linear-gradient(90deg,var(--green-2),var(--green))}
+  .fill.mid{background:linear-gradient(90deg,#d97706,var(--warn))}
+  .fill.low{background:linear-gradient(90deg,#b91c1c,var(--danger))}
+
+  .foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem}
+
+  /* Spinner */
+  .spinner{display:none;text-align:center;padding:40px 0;color:var(--muted)}
+  .spinner.show{display:block}
+  .ring{width:42px;height:42px;border:3px solid var(--line);border-top-color:var(--green);
+    border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .err{display:none;background:#2a1113;border:1px solid #5c1f22;color:var(--danger);
+    padding:12px 14px;border-radius:12px;font-size:.88rem;margin-top:14px}
+
+  /* Not-a-plant card */
+  .np-card{text-align:center;padding:30px 14px;background:#2a1113;border:1px solid #5c1f22;
+    border-radius:16px}
+  .np-ico{font-size:48px;margin-bottom:10px}
+  .np-title{font-size:1.4rem;font-weight:800;color:var(--danger);margin-bottom:6px}
+  .np-msg{color:var(--text);font-size:.92rem;margin-bottom:10px}
+  .np-reason{color:var(--muted);font-size:.82rem;font-style:italic}
+
+  /* Healthy card */
+  .hp-card{text-align:center;padding:26px 14px;background:#0f2218;border:1px solid #1f6b43;
+    border-radius:16px}
+  .hp-ico{font-size:48px;margin-bottom:8px}
+  .hp-title{font-size:1.5rem;font-weight:800;color:var(--green);margin-bottom:10px}
+  .hp-plant{margin-bottom:10px}
+  .hp-msg{color:var(--text);font-size:.92rem}
+
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:34px}
+  footer a{color:var(--green);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🌿</div>
+    <div>
+      <h1>AgroCure</h1>
+      <div class="tag">Hierarchical plant-disease diagnosis · ResNet50</div>
+    </div>
+  </header>
+
+  <div class="badges">
+    <span class="badge"><b>30</b> diseases</span>
+    <span class="badge"><b>16</b> plants</span>
+    <span class="badge">Accuracy <b>93.8%</b></span>
+    <span class="badge">Macro F1 <b>0.942</b></span>
+    <span class="badge" id="statusBadge">● connecting…</span>
+  </div>
+
+  <div class="grid">
+    <!-- Upload -->
+    <div class="card">
+      <h2><span class="dot"></span> Upload a leaf photo</h2>
+      <div class="drop" id="drop">
+        <div class="ico">📷</div>
+        <p><b>Click to choose</b> or drag &amp; drop</p>
+        <p style="margin-top:4px;font-size:.78rem">JPG / PNG</p>
+        <input type="file" id="file" accept="image/*" hidden />
+      </div>
+
+      <div class="guide">
+        <div class="g-col ok">
+          <div class="g-head">✅ Best results</div>
+          <div>One leaf, filling the frame</div>
+          <div>Sharp focus, good light</div>
+          <div>Plain background</div>
+        </div>
+        <div class="g-col no">
+          <div class="g-head">⚠️ Avoid</div>
+          <div>Whole plant / wide shots</div>
+          <div>Blurry or dark photos</div>
+          <div>Fruit only (no leaf)</div>
+        </div>
+      </div>
+
+      <img id="preview" alt="preview" />
+      <button class="btn" id="analyze" disabled>Analyze</button>
+      <div class="err" id="err"></div>
+    </div>
+
+    <!-- Result -->
+    <div class="card">
+      <h2><span class="dot"></span> Diagnosis</h2>
+
+      <div class="result-empty" id="empty">
+        <div class="ico">🔬</div>
+        <p>Your result will appear here.</p>
+      </div>
+
+      <div class="spinner" id="spinner">
+        <div class="ring"></div>
+        Analyzing image…
+      </div>
+
+      <div id="notplant" style="display:none">
+        <div class="np-card">
+          <div class="np-ico">🚫</div>
+          <div class="np-title">Not a plant</div>
+          <div class="np-msg" id="npMsg"></div>
+          <div class="np-reason" id="npReason"></div>
+        </div>
+        <div class="foot">
+          <span id="npLatency"></span>
+          <span>AgroCure v4</span>
+        </div>
+      </div>
+
+      <div id="healthy" style="display:none">
+        <div class="tip" id="hpTip"></div>
+        <div class="hp-card">
+          <div class="hp-ico">🌱</div>
+          <div class="hp-title">Healthy</div>
+          <div class="hp-plant"><span class="plant-chip" id="hpPlant">—</span></div>
+          <div class="hp-msg">No disease detected.</div>
+          <div class="meter" style="margin-top:18px">
+            <div class="row"><span>Healthy score</span><span id="hpScoreTxt">—</span></div>
+            <div class="track"><div class="fill" id="hpScoreBar"></div></div>
+          </div>
+        </div>
+        <div class="foot">
+          <span id="hpLatency"></span>
+          <span>AgroCure v4</span>
+        </div>
+      </div>
+
+      <div id="result">
+        <div class="tip" id="rTip"></div>
+        <div class="verdict">
+          <span class="disease" id="rDisease">—</span>
+          <span class="plant-chip" id="rPlant">—</span>
+        </div>
+        <div class="full-label" id="rLabel"></div>
+
+        <div class="meter">
+          <div class="row"><span>Overall confidence</span><span id="rConfTxt">—</span></div>
+          <div class="track"><div class="fill" id="rConfBar"></div></div>
+        </div>
+        <div class="meter">
+          <div class="row"><span>Stage 1 — plant</span><span id="rS1Txt">—</span></div>
+          <div class="track"><div class="fill" id="rS1Bar"></div></div>
+        </div>
+        <div class="meter" id="s2Wrap">
+          <div class="row"><span>Stage 2 — disease</span><span id="rS2Txt">—</span></div>
+          <div class="track"><div class="fill" id="rS2Bar"></div></div>
+        </div>
+
+        <div class="foot">
+          <span id="rLatency"></span>
+          <span>AgroCure v4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Built with FastAPI + PyTorch · Stage 1 routes the plant, Stage 2 confirms the disease.
+  </footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const drop = $("#drop"), fileInput = $("#file"), preview = $("#preview"),
+      analyze = $("#analyze"), err = $("#err");
+let chosen = null;
+
+// Health badge
+fetch("/health").then(r=>r.json()).then(d=>{
+  $("#statusBadge").innerHTML = `● ${d.status==='ok'?'model ready':'loading'}`;
+  $("#statusBadge").style.color = d.status==='ok' ? 'var(--green)' : 'var(--warn)';
+}).catch(()=>{ $("#statusBadge").innerHTML="● offline"; $("#statusBadge").style.color="var(--danger)"; });
+
+drop.addEventListener("click", ()=>fileInput.click());
+fileInput.addEventListener("change", e=>handle(e.target.files[0]));
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+drop.addEventListener("drop", e=>handle(e.dataTransfer.files[0]));
+
+function handle(f){
+  if(!f || !f.type.startsWith("image/")){ showErr("Please choose an image file."); return; }
+  chosen = f; err.style.display="none";
+  preview.src = URL.createObjectURL(f);
+  preview.style.display="block";
+  analyze.disabled=false;
+}
+function showErr(m){ err.textContent=m; err.style.display="block"; }
+
+function setTip(el, msg){
+  if(msg){ el.textContent = "📷 " + msg; el.style.display="block"; }
+  else { el.style.display="none"; }
+}
+function setBar(bar, txt, v){
+  const pct = Math.round(v*100);
+  txt.textContent = pct + "%";
+  bar.className = "fill" + (pct<70?" low":pct<85?" mid":"");
+  requestAnimationFrame(()=> bar.style.width = pct + "%");
+}
+
+analyze.addEventListener("click", async ()=>{
+  if(!chosen) return;
+  err.style.display="none";
+  $("#empty").style.display="none";
+  $("#result").style.display="none";
+  $("#notplant").style.display="none";
+  $("#healthy").style.display="none";
+  $("#spinner").classList.add("show");
+  analyze.disabled=true;
+
+  const fd = new FormData(); fd.append("file", chosen);
+  try{
+    const r = await fetch("/predict",{method:"POST",body:fd});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.detail || "Prediction failed");
+
+    // Rejected by the plant gate
+    if(d.is_plant === false){
+      $("#npMsg").textContent    = d.message || "No plant detected.";
+      $("#npReason").textContent = d.reason ? `(${d.reason})` : "";
+      $("#npLatency").textContent= (d.latency_ms ?? "—") + " ms";
+      $("#notplant").style.display="block";
+      return;
+    }
+
+    // Healthy leaf
+    if(d.healthy === true){
+      $("#hpPlant").textContent   = d.plant;
+      setBar($("#hpScoreBar"), $("#hpScoreTxt"), d.health_score);
+      $("#hpLatency").textContent = (d.latency_ms ?? "—") + " ms";
+      setTip($("#hpTip"), d.framing_tip);
+      $("#healthy").style.display="block";
+      return;
+    }
+
+    setTip($("#rTip"), d.framing_tip);
+    $("#rDisease").textContent = d.disease;
+    $("#rPlant").textContent   = d.plant;
+    $("#rLabel").textContent   = d.label;
+    setBar($("#rConfBar"), $("#rConfTxt"), d.confidence);
+    setBar($("#rS1Bar"),   $("#rS1Txt"),   d.stage1_conf);
+
+    if(d.stage2_conf != null){
+      $("#s2Wrap").style.display="block";
+      setBar($("#rS2Bar"), $("#rS2Txt"), d.stage2_conf);
+    } else {
+      $("#s2Wrap").style.display="none";
+    }
+    $("#rLatency").textContent = (d.latency_ms ?? "—") + " ms";
+    $("#result").style.display="block";
+  }catch(e){
+    $("#empty").style.display="block";
+    showErr(e.message);
+  }finally{
+    $("#spinner").classList.remove("show");
+    analyze.disabled=false;
+  }
+});
+</script>
+</body>
+</html>

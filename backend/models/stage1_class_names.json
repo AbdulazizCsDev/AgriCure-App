@@ -1,0 +1,38 @@
+{
+  "plant_names": [
+    "Apple Tree",
+    "Bell Pepper",
+    "Cassava",
+    "Chinese Cabbage",
+    "Chinese Rose",
+    "Citrus Tree",
+    "Corn-Maize",
+    "Grape",
+    "Mango Tree",
+    "Pea",
+    "Peach Tree",
+    "Pear Tree",
+    "Potato",
+    "Squash",
+    "Tomato",
+    "Wheat"
+  ],
+  "plant_to_idx": {
+    "Apple Tree": 0,
+    "Bell Pepper": 1,
+    "Cassava": 2,
+    "Chinese Cabbage": 3,
+    "Chinese Rose": 4,
+    "Citrus Tree": 5,
+    "Corn-Maize": 6,
+    "Grape": 7,
+    "Mango Tree": 8,
+    "Pea": 9,
+    "Peach Tree": 10,
+    "Pear Tree": 11,
+    "Potato": 12,
+    "Squash": 13,
+    "Tomato": 14,
+    "Wheat": 15
+  }
+}

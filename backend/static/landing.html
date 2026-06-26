@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark light" />
+<title>AgroCure · Plant health, powered by AI</title>
+<script>(function(){try{var t=localStorage.getItem("agro-theme");if(!t)t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="dark";}})();</script>
+<style>
+  :root{
+    --bg:#05130d; --surface:#0c1d15; --surface-2:#091711; --surface-hi:#102a1e;
+    --glass-line:rgba(120,210,165,.16); --line:#1d3c2d;
+    --ink:#edfaf2; --ink-2:#c4ddd0; --muted:#8fb3a2;
+    --accent:#34d399; --accent-2:#10b981; --accent-deep:#059669; --accent-ink:#03130c;
+    --lime:#a3e635; --mint:#6ee7b7; --info:#7cc4ff;
+    --danger:#fb9b9b; --danger-bg:rgba(80,28,30,.55); --danger-line:#5a2528;
+    --r-sm:12px; --r-md:16px; --r-lg:24px; --r-pill:999px;
+    --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);
+    --spring:cubic-bezier(.34,1.56,.64,1);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --shadow:0 30px 90px -36px rgba(0,0,0,.9);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100dvh;line-height:1.55;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    padding:max(20px,env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column}
+  svg{display:block}
+  :focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:8px}
+  button,input{font-family:inherit}
+  .page{width:100%;max-width:1000px;margin:0 auto;position:relative;z-index:1;flex:1;display:flex;flex-direction:column;
+    transition:opacity .35s var(--ease-out),transform .35s var(--ease-out)}
+  body.leaving .page{opacity:0;transform:scale(.98) translateY(-6px)}
+
+  /* ── ambient nature backdrop ──────────────────────────── */
+  .bg{position:fixed;inset:0;z-index:-2;overflow:hidden;
+    background:radial-gradient(150% 120% at 50% -10%,#0a2017 0%,var(--bg) 60%)}
+  .bg .blob{position:absolute;border-radius:50%;filter:blur(80px);will-change:transform}
+  .bg .b1{width:64vw;height:64vw;top:-22vw;right:-16vw;opacity:.4;
+    background:radial-gradient(circle,rgba(52,211,153,.5),transparent 65%);animation:drift1 24s var(--ease-in-out) infinite}
+  .bg .b2{width:60vw;height:60vw;bottom:-26vw;left:-20vw;opacity:.34;
+    background:radial-gradient(circle,rgba(16,185,129,.45),transparent 66%);animation:drift2 29s var(--ease-in-out) infinite}
+  .bg .b3{width:42vw;height:42vw;top:26%;left:32%;opacity:.2;
+    background:radial-gradient(circle,rgba(163,230,53,.4),transparent 62%);animation:drift3 26s var(--ease-in-out) infinite}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-5vw,4vh) scale(1.12)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,-3vh) scale(1.1)}}
+  @keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(4vw,5vh) scale(1.15)}}
+  [data-theme="light"] .bg{background:radial-gradient(150% 120% at 50% -10%,#ffffff 0%,#eaf4ee 60%)}
+  [data-theme="light"] .bg .blob{opacity:.16 !important}
+  /* drifting leaves */
+  .leaves{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+  .leaves i{position:absolute;top:-40px;color:var(--accent);opacity:0;will-change:transform,opacity;animation:fall linear infinite}
+  .leaves i svg{width:100%;height:100%}
+  @keyframes fall{0%{transform:translateY(-6vh) translateX(0) rotate(0);opacity:0}
+    10%{opacity:.5}90%{opacity:.4}100%{transform:translateY(112vh) translateX(var(--dx,40px)) rotate(320deg);opacity:0}}
+  @media(prefers-reduced-motion:reduce){.leaves{display:none}.bg .blob{animation:none}}
+
+  /* ── header ───────────────────────────────────────────── */
+  header{display:flex;align-items:center;gap:13px;margin-bottom:auto;padding-top:4px;
+    animation:rise .6s var(--ease-out) both}
+  .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:var(--accent-ink);
+    background:linear-gradient(150deg,var(--lime),var(--accent),var(--accent-deep));
+    box-shadow:0 12px 30px -12px rgba(52,211,153,.8),inset 0 1px 0 rgba(255,255,255,.4);
+    animation:sway 6s var(--ease-in-out) infinite}
+  .logo svg{width:27px;height:27px}
+  @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  .brand h1{font-size:1.3rem;font-weight:750;letter-spacing:-.02em;line-height:1}
+  .brand .tag{color:var(--muted);font-size:.8rem;margin-top:2px}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  /* ── hero ─────────────────────────────────────────────── */
+  .hero{text-align:center;padding:clamp(34px,8vh,90px) 0 clamp(26px,5vh,46px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:var(--r-pill);
+    background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.28);color:var(--accent);
+    font-size:.78rem;font-weight:650;margin-bottom:22px;animation:rise .6s var(--ease-out) .05s both}
+  .eyebrow svg{width:14px;height:14px}
+  .hero h2{font-size:clamp(2rem,6.5vw,3.6rem);font-weight:820;letter-spacing:-.035em;line-height:1.05;
+    text-wrap:balance;animation:rise .7s var(--ease-out) .12s both}
+  .hero h2 .grad{background:linear-gradient(110deg,var(--lime),var(--accent),var(--mint));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--ink-2);font-size:clamp(1rem,2.4vw,1.18rem);max-width:54ch;margin:18px auto 0;
+    text-wrap:balance;animation:rise .7s var(--ease-out) .2s both}
+
+  /* ── role cards ───────────────────────────────────────── */
+  .choose{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    text-align:center;margin-bottom:18px;animation:rise .6s var(--ease-out) .28s both}
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:760px;margin:0 auto;width:100%}
+  @media(max-width:620px){.roles{grid-template-columns:1fr}}
+  .role{position:relative;overflow:hidden;text-align:left;cursor:pointer;border:1px solid var(--glass-line);
+    background:linear-gradient(180deg,rgba(16,36,26,.82),rgba(9,22,16,.86));backdrop-filter:blur(12px) saturate(1.1);
+    border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow);color:inherit;
+    transition:transform .35s var(--spring),border-color .3s var(--ease-out),box-shadow .3s var(--ease-out);
+    animation:rise .6s var(--ease-out) both}
+  .role:nth-child(1){animation-delay:.34s} .role:nth-child(2){animation-delay:.42s}
+  [data-theme="light"] .role{background:linear-gradient(180deg,#ffffff,#f4faf6)}
+  .role::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+    transition:opacity .3s ease;background:radial-gradient(120% 100% at 50% 0%,rgba(52,211,153,.12),transparent 60%)}
+  @media(hover:hover){.role:hover{transform:translateY(-6px);border-color:rgba(52,211,153,.4);
+    box-shadow:0 40px 100px -40px rgba(0,0,0,.9),0 0 0 1px rgba(52,211,153,.08)}
+    .role:hover::after{opacity:1} .role:hover .role-go{gap:12px;color:var(--accent)}
+    .role:hover .role-ic{transform:scale(1.06) rotate(-3deg)}}
+  .role:active{transform:translateY(-2px) scale(.99)}
+  .role-ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;margin-bottom:18px;
+    transition:transform .4s var(--spring)}
+  .role-ic svg{width:28px;height:28px}
+  .role.user .role-ic{background:radial-gradient(circle at 50% 30%,rgba(163,230,53,.22),rgba(52,211,153,.12));color:var(--accent)}
+  .role.exp .role-ic{background:rgba(124,196,255,.14);color:var(--info)}
+  .role h3{font-size:1.32rem;font-weight:780;letter-spacing:-.02em}
+  .role p{color:var(--muted);font-size:.9rem;margin-top:7px;line-height:1.5}
+  .role-go{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:.92rem;
+    color:var(--ink-2);transition:gap .25s var(--ease-out),color .25s var(--ease-out)}
+  .role-go svg{width:17px;height:17px}
+  .role .lock{position:absolute;top:20px;right:20px;display:inline-flex;align-items:center;gap:5px;
+    font-size:.68rem;font-weight:650;color:var(--muted);background:rgba(9,23,16,.5);border:1px solid var(--line);
+    padding:4px 9px;border-radius:var(--r-pill)}
+  [data-theme="light"] .role .lock{background:var(--surface-2)}
+  .role .lock svg{width:11px;height:11px}
+
+  footer{text-align:center;color:var(--muted);font-size:.76rem;margin-top:clamp(30px,6vh,60px);
+    animation:rise .6s var(--ease-out) .5s both}
+
+  /* ── reviewer PIN overlay ─────────────────────────────── */
+  .gate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(3,10,7,.72);backdrop-filter:blur(10px)}
+  [data-theme="light"] .gate{background:rgba(220,235,228,.6)}
+  .gate.show{display:flex;animation:fadein .3s ease both}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .gate-card{width:100%;max-width:420px;background:linear-gradient(180deg,var(--surface),var(--surface-2));
+    border:1px solid var(--glass-line);border-radius:var(--r-lg);padding:30px 26px;box-shadow:var(--shadow);
+    transform:scale(.9) translateY(14px);opacity:0;transition:transform .4s var(--spring),opacity .3s ease}
+  .gate.show .gate-card{transform:none;opacity:1}
+  .gate-card.shake{animation:shake .45s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+  .gate-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);
+    font-size:.84rem;cursor:pointer;margin-bottom:16px;transition:color .2s}
+  .gate-back:hover{color:var(--ink)} .gate-back svg{width:15px;height:15px}
+  .gate-ic{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;margin-bottom:16px;
+    background:rgba(124,196,255,.14);color:var(--info);transition:all .4s var(--spring)}
+  .gate-ic svg{width:28px;height:28px}
+  .gate-card.ok .gate-ic{background:rgba(52,211,153,.16);color:var(--accent);transform:scale(1.05)}
+  .gate h3{font-size:1.32rem;font-weight:780;letter-spacing:-.02em}
+  .gate .sub{color:var(--muted);font-size:.88rem;margin-top:6px;margin-bottom:20px}
+  .pin{width:100%;text-align:center;font-size:1.5rem;font-weight:700;letter-spacing:.45em;font-variant-numeric:tabular-nums;
+    background:rgba(9,23,16,.6);border:1.5px solid var(--line);border-radius:var(--r-md);color:var(--ink);
+    padding:15px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+  [data-theme="light"] .pin{background:#fff}
+  .pin::placeholder{letter-spacing:.3em;color:var(--muted);font-weight:500}
+  .pin:focus{border-color:var(--info);box-shadow:0 0 0 4px rgba(124,196,255,.14)}
+  .pin.bad{border-color:var(--danger-line);box-shadow:0 0 0 4px rgba(251,155,155,.12)}
+  .gate-err{display:none;align-items:center;gap:8px;margin-top:13px;color:var(--danger);font-size:.84rem;font-weight:600}
+  .gate-err.show{display:flex;animation:rise .3s var(--ease-out) both}
+  .gate-err svg{width:15px;height:15px;flex-shrink:0}
+  .gate-btn{margin-top:18px;width:100%;border:none;cursor:pointer;min-height:52px;display:inline-flex;align-items:center;
+    justify-content:center;gap:9px;border-radius:var(--r-md);font-weight:750;font-size:1rem;color:var(--accent-ink);
+    background:linear-gradient(150deg,var(--lime),var(--accent),var(--accent-deep));background-size:160% 160%;
+    box-shadow:0 14px 32px -14px rgba(52,211,153,.85);transition:filter .18s,transform .12s,opacity .2s}
+  .gate-btn svg{width:18px;height:18px}
+  .gate-btn:hover{filter:brightness(1.05)} .gate-btn:active{transform:scale(.98)}
+  .gate-btn:disabled{opacity:.5;cursor:not-allowed}
+</style>
+<link rel="stylesheet" href="/static/agro-ui.css" />
+<script src="/static/agro-ui.js" defer></script>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+<div class="leaves" id="leaves" aria-hidden="true"></div>
+
+<div class="page">
+  <header>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 7 9 3 20 3c0 11-4 16-9 16Z"/><path d="M4 21c2-5 5-8 9-10"/></svg></div>
+    <div class="brand"><h1>AgroCure</h1><div class="tag">Plant health, powered by AI</div></div>
+    <div class="ui-controls" style="margin-left:auto">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme"></button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg> Trusted plant-disease diagnosis</span>
+    <h2>Spot plant disease <span class="grad">before it spreads</span></h2>
+    <p>Snap a leaf and AgroCure checks it for disease in seconds — and when it isn't sure, a human expert steps in. No guesswork, just guidance you can trust.</p>
+  </section>
+
+  <div class="choose">Choose how you'd like to continue</div>
+  <div class="roles">
+    <button class="role user" id="roleUser" type="button">
+      <span class="role-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+      <h3>Continue as User</h3>
+      <p>Upload a leaf photo and get an instant AI diagnosis with care guidance from Sage.</p>
+      <span class="role-go">Start diagnosing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </button>
+
+    <button class="role exp" id="roleExpert" type="button">
+      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Code required</span>
+      <span class="role-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <h3>Continue as Reviewer</h3>
+      <p>Authorized agricultural experts review and confirm flagged diagnoses to train the system.</p>
+      <span class="role-go">Verify &amp; review <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </button>
+  </div>
+
+  <footer>Two-stage AI · confident answers, expert review when it counts.</footer>
+</div>
+
+<!-- ── reviewer verification ─────────────────────────────── -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="Reviewer verification">
+  <div class="gate-card" id="gateCard">
+    <button class="gate-back" id="gateBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back</button>
+    <div class="gate-ic" id="gateIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h3 id="gateTitle">Reviewer access</h3>
+    <div class="sub" id="gateSub">Enter your access code to open the expert dashboard.</div>
+    <form id="gateForm">
+      <input class="pin" id="pin" inputmode="numeric" autocomplete="off" pattern="[0-9]*" placeholder="• • • • • •" aria-label="Access code" />
+      <div class="gate-err" id="gateErr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span id="gateErrTxt"></span></div>
+      <button class="gate-btn" id="gateBtn" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> <span>Enter dashboard</span></button>
+    </form>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* drifting leaves */
+(function(){
+  if (reduceMotion) return;
+  const c = $("#leaves"), N = 9;
+  const LEAF = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 20A7 7 0 0 1 4 13C4 7 9 3 20 3c0 11-4 16-9 16Z"/></svg>';
+  for (let i = 0; i < N; i++){
+    const el = document.createElement("i");
+    const sz = 12 + Math.random()*16; el.style.width = el.style.height = sz + "px";
+    el.style.left = (Math.random()*100) + "vw";
+    el.style.setProperty("--dx", (Math.random()*120 - 60) + "px");
+    const dur = 14 + Math.random()*12;
+    el.style.animationDuration = dur + "s";
+    el.style.animationDelay = (-Math.random()*dur) + "s";
+    el.innerHTML = LEAF;
+    c.appendChild(el);
+  }
+})();
+
+/* ── continue as user (smooth transition) ─────────────────── */
+function goto(url){ document.body.classList.add("leaving"); setTimeout(() => location.href = url, 320); }
+$("#roleUser").addEventListener("click", () => goto("/app"));
+
+/* ── reviewer gate ────────────────────────────────────────── */
+const gate = $("#gate"), gateCard = $("#gateCard"), pin = $("#pin"), gateErr = $("#gateErr"), gateBtn = $("#gateBtn");
+function openGate(){ gate.classList.add("show"); setTimeout(() => pin.focus(), 320); }
+function closeGate(){ gate.classList.remove("show"); resetGate(); }
+function resetGate(){ pin.value = ""; pin.classList.remove("bad"); gateErr.classList.remove("show"); gateCard.classList.remove("ok"); }
+$("#roleExpert").addEventListener("click", openGate);
+$("#gateBack").addEventListener("click", closeGate);
+gate.addEventListener("click", e => { if (e.target === gate) closeGate(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && gate.classList.contains("show")) closeGate(); });
+pin.addEventListener("input", () => { pin.value = pin.value.replace(/\D/g, "").slice(0, 12); pin.classList.remove("bad"); gateErr.classList.remove("show"); });
+
+function showError(msg){
+  $("#gateErrTxt").textContent = msg;
+  gateErr.classList.add("show"); pin.classList.add("bad");
+  gateCard.classList.remove("shake"); void gateCard.offsetWidth; gateCard.classList.add("shake");
+  pin.value = ""; pin.focus();
+}
+
+$("#gateForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = pin.value.trim();
+  if (!code){ showError("Please enter your access code."); return; }
+  gateBtn.disabled = true;
+  try{
+    const r = await fetch("/api/reviewer-auth", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({code})});
+    const d = await r.json();
+    if (r.ok && d.ok){
+      try{ sessionStorage.setItem("agro-reviewer", "ok"); }catch(_){}
+      gateCard.classList.add("ok");
+      $("#gateIc").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      $("#gateTitle").textContent = "Access granted";
+      $("#gateSub").textContent = "Opening the expert dashboard…";
+      setTimeout(() => location.href = "/dashboard", 750);
+    } else {
+      showError(d.error || "Incorrect access code. Please try again.");
+      gateBtn.disabled = false;
+    }
+  }catch(err){
+    showError("Couldn't verify right now. Please try again.");
+    gateBtn.disabled = false;
+  }
+});
+
+/* deep link: dashboard guard sends unauthorized visitors here */
+if (new URLSearchParams(location.search).get("role") === "expert") openGate();
+</script>
+</body>
+</html>

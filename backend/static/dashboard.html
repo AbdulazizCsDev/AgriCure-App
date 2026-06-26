@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<title>AgroCure · Expert Review</title>
+<script>(function(){try{var t=localStorage.getItem("agro-theme");if(!t)t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="dark";}})();</script>
+<script>(function(){try{if(sessionStorage.getItem("agro-reviewer")!=="ok"){location.replace("/?role=expert");}}catch(e){}})();</script>
+<style>
+  :root{
+    --bg:#07140e; --surface:#0d1d15; --surface-2:#0a1812; --surface-hi:#102a1e; --line:#1d3c2d;
+    --glass-line:rgba(120,210,165,.16);
+    --ink:#edfaf2; --ink-2:#c4ddd0; --muted:#8fb3a2;
+    --accent:#34d399; --accent-2:#10b981; --accent-deep:#047857; --accent-ink:#03130c;
+    --lime:#a3e635; --warn:#fcc44d; --danger:#fb9b9b; --info:#7cc4ff;
+    --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
+    --ease-out:cubic-bezier(.23,1,.32,1); --spring:cubic-bezier(.34,1.56,.64,1);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);min-height:100dvh;line-height:1.5;
+    padding:max(18px,env(safe-area-inset-top)) 16px calc(64px + env(safe-area-inset-bottom));
+    background:radial-gradient(1100px 520px at 85% -10%,rgba(16,185,129,.14),transparent 55%),
+      radial-gradient(800px 460px at -10% 110%,rgba(5,120,87,.12),transparent 52%),var(--bg);
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:840px;margin:0 auto}
+  a{color:var(--accent);text-decoration:none}
+  :focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:6px}
+  button,input{font-family:inherit}
+
+  header{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:4px}
+  .logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:var(--accent-ink);
+    background:linear-gradient(150deg,var(--lime),var(--accent),var(--accent-deep));flex-shrink:0}
+  .logo svg{width:25px;height:25px}
+  h1{font-size:1.28rem;font-weight:750;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:.83rem}
+  .count{margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:var(--surface);
+    border:1px solid var(--glass-line);padding:8px 15px;border-radius:var(--r-pill);font-size:.84rem;font-weight:650;color:var(--ink-2)}
+  .count .n{font-family:var(--mono);font-size:1.05rem;color:var(--accent);font-weight:700}
+  .count .led{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 7px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+  .nav{margin:10px 0 22px;font-size:.82rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  kbd{font-family:var(--mono);font-size:.72rem;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;color:var(--ink-2)}
+
+  .empty,.off{text-align:center;padding:64px 16px;color:var(--muted)}
+  .off{color:var(--danger)}
+  .empty .glyph{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;margin:0 auto 14px;
+    background:var(--surface);border:1px solid var(--line);color:var(--accent)}
+  .empty .glyph svg{width:30px;height:30px}
+  .empty h2{color:var(--ink);font-size:1.05rem;font-weight:700}
+
+  /* ── review card ──────────────────────────────────────── */
+  .card{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--glass-line);
+    border-radius:var(--r-lg);padding:18px;margin-bottom:16px;animation:rise .45s var(--ease-out) both;
+    transition:border-color .25s var(--ease-out),box-shadow .25s var(--ease-out)}
+  .card.focus{border-color:rgba(52,211,153,.4);box-shadow:0 0 0 1px rgba(52,211,153,.1),0 20px 50px -28px rgba(0,0,0,.8)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .ctop{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:start}
+  @media(max-width:520px){.ctop{grid-template-columns:96px 1fr;gap:12px}}
+  .photo{width:100%;aspect-ratio:1/1;border-radius:var(--r-md);object-fit:cover;border:1px solid var(--line);
+    background:var(--surface-2);cursor:zoom-in;transition:transform .2s var(--ease-out)}
+  .photo:hover{transform:scale(1.02)}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.06em;padding:4px 9px;border-radius:var(--r-pill);margin-bottom:8px}
+  .badge.review{background:rgba(124,196,255,.12);border:1px solid rgba(124,196,255,.35);color:var(--info)}
+  .badge.review svg{width:12px;height:12px;animation:spin 1.6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .guess{font-size:.95rem;color:var(--ink-2)}
+  .guess b{color:var(--ink);font-weight:700}
+  .conf-line{display:flex;align-items:center;gap:8px;margin-top:7px}
+  .conf-line .ctxt{font-size:.74rem;color:var(--muted);font-family:var(--mono)}
+  .conf-mini{flex:1;max-width:120px;height:6px;border-radius:var(--r-pill);background:var(--surface-hi);overflow:hidden;border:1px solid var(--line)}
+  .conf-mini i{display:block;height:100%;background:linear-gradient(90deg,var(--warn),var(--danger))}
+
+  /* AI signals (secondary, tucked) */
+  details.signals{margin-top:10px}
+  details.signals summary{cursor:pointer;list-style:none;color:var(--muted);font-size:.76rem;user-select:none}
+  details.signals summary::-webkit-details-marker{display:none}
+  details.signals summary::before{content:"▸ ";color:var(--accent);font-size:.7rem}
+  details.signals[open] summary::before{content:"▾ "}
+  .scores{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .pill{font-family:var(--mono);font-size:.72rem;background:var(--surface-2);border:1px solid var(--line);
+    color:var(--ink-2);padding:3px 9px;border-radius:var(--r-pill)}
+  .dup{display:none;margin:10px 0 0;font-size:.78rem;color:var(--warn);font-weight:600}
+  .dup.show{display:block}
+
+  /* visually-similar reference strip */
+  .nb{margin:14px 0 4px}
+  .nb .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .nb .lbl svg{width:13px;height:13px}
+  .nb-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .nb-row::-webkit-scrollbar{height:6px}.nb-row::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+  .nb-item{flex:0 0 86px;cursor:pointer;border-radius:11px;border:1px solid var(--line);overflow:hidden;
+    background:var(--surface-2);transition:border-color .15s ease,transform .12s}
+  .nb-item:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .nb-item img{width:100%;height:60px;object-fit:cover;display:block}
+  .nb-item .cap{padding:4px 6px;font-size:.66rem;line-height:1.25;color:var(--ink-2)}
+  .nb-item .cap b{font-family:var(--mono);color:var(--accent);display:block}
+
+  /* labeling */
+  .label-zone{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+  .lz-head{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin-bottom:4px}
+  .suggest{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0}
+  .suggest .sg-lbl{font-size:.72rem;color:var(--muted)}
+  .sg{cursor:pointer;font-size:.78rem;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+    padding:5px 12px;border-radius:var(--r-pill);transition:all .15s ease}
+  .sg:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+  .sg.clip{border-color:rgba(52,211,153,.4);color:var(--accent)}
+  .fields{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+  .field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px}
+  .field>label{font-size:.74rem;color:var(--muted);font-weight:600}
+
+  /* live verification preview — prevents mislabels before submit */
+  .verify{display:flex;align-items:center;gap:11px;margin-top:14px;padding:12px 14px;border-radius:var(--r-md);
+    background:var(--surface-2);border:1px dashed var(--line);transition:all .25s var(--ease-out)}
+  .verify.ready{border-style:solid;border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.07)}
+  .verify .vi{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;
+    background:var(--surface-hi);color:var(--muted)}
+  .verify.ready .vi{background:rgba(52,211,153,.16);color:var(--accent)}
+  .verify .vi svg{width:16px;height:16px}
+  .verify .vt{font-size:.76rem;color:var(--muted)}
+  .verify .vv{font-size:1rem;font-weight:750;color:var(--ink);margin-top:1px}
+  .verify .vv .new{font-size:.7rem;font-weight:700;color:var(--warn);background:var(--warn-bg,rgba(74,58,20,.45));
+    border:1px solid rgba(90,74,29,.7);padding:1px 7px;border-radius:var(--r-pill);margin-left:7px;vertical-align:middle}
+
+  .btns{display:flex;gap:9px;margin-top:14px}
+  button.act{cursor:pointer;border:none;font-weight:700;font-size:.92rem;min-height:46px;padding:11px 18px;
+    border-radius:var(--r-md);transition:filter .15s ease,transform .1s ease,opacity .15s}
+  button.act:active{transform:scale(.97)}
+  .approve{flex:1;background:linear-gradient(150deg,var(--lime),var(--accent-deep));color:var(--accent-ink);
+    display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .approve svg{width:17px;height:17px}
+  .approve:hover{filter:brightness(1.06)}
+  .approve:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  .skip{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+  .skip:hover{border-color:var(--muted)}
+
+  /* searchable dropdown */
+  .dd{position:relative}
+  .dd-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);min-height:44px;
+    color:var(--ink);padding:10px 12px;font-size:.92rem;cursor:pointer;transition:border-color .15s}
+  .dd-btn .dd-val{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dd-btn .dd-val.set{color:var(--ink);font-weight:650}
+  .dd-btn svg{width:16px;height:16px;color:var(--muted);flex-shrink:0;transition:transform .15s ease}
+  .dd.open .dd-btn{border-color:var(--accent)} .dd.open .dd-btn svg{transform:rotate(180deg)}
+  .dd-panel{position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:30;display:none;
+    background:var(--surface);border:1px solid var(--glass-line);border-radius:var(--r-sm);
+    box-shadow:0 18px 50px -16px rgba(0,0,0,.85);overflow:hidden}
+  .dd.open .dd-panel{display:block;animation:rise .18s var(--ease-out) both}
+  .dd-search{width:100%;border:none;border-bottom:1px solid var(--line);background:transparent;
+    color:var(--ink);padding:10px 12px;font-size:.88rem;outline:none}
+  .dd-list{max-height:200px;overflow-y:auto}
+  .dd-list::-webkit-scrollbar{width:8px}.dd-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .dd-opt{padding:9px 12px;font-size:.88rem;color:var(--ink-2);cursor:pointer}
+  .dd-opt:hover{background:rgba(52,211,153,.1);color:var(--ink)}
+  .dd-add{padding:10px 12px;font-size:.84rem;color:var(--accent);cursor:pointer;font-weight:600;
+    border-top:1px solid var(--line);background:rgba(52,211,153,.06)}
+  .dd-add:hover{background:rgba(52,211,153,.13)}
+  .dd-empty{padding:10px 12px;font-size:.82rem;color:var(--muted)}
+
+  .lightbox{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+    background:rgba(3,10,7,.88);backdrop-filter:blur(6px);padding:24px;cursor:zoom-out}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:92vw;max-height:92vh;border-radius:14px;border:1px solid var(--glass-line);box-shadow:0 30px 90px -20px rgba(0,0,0,.85)}
+  .lightbox .x{position:fixed;top:16px;right:20px;color:var(--ink);font-size:1.3rem;cursor:pointer;
+    width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.1)}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--surface);
+    border:1px solid var(--accent);color:var(--ink);padding:12px 18px;border-radius:var(--r-md);
+    font-size:.88rem;font-weight:600;opacity:0;transition:all .3s var(--spring);pointer-events:none;z-index:120}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* image display hardening (#14) */
+  .photo-wrap{position:relative;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line);background:var(--surface-hi)}
+  .photo-wrap::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,var(--surface-hi),var(--surface-2),var(--surface-hi));background-size:300% 100%;animation:shimmer 1.3s linear infinite;z-index:0}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  .photo-wrap .photo{position:relative;z-index:1;border:none;opacity:0;transition:opacity .4s ease;display:block}
+  .photo-wrap.loaded .photo{opacity:1}
+  .photo-wrap.loaded::before{display:none}
+  .photo-wrap.failed{display:grid;place-items:center;color:var(--muted);aspect-ratio:1/1;font-size:.74rem;text-align:center;padding:8px}
+  .photo-wrap.failed::before{display:none}
+  .expand{position:absolute;z-index:2;bottom:7px;right:7px;display:inline-flex;align-items:center;gap:5px;
+    background:rgba(5,15,10,.7);color:#edfaf2;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);
+    padding:5px 9px;border-radius:var(--r-pill);font-size:.7rem;font-weight:600;cursor:zoom-in;opacity:0;transition:opacity .2s}
+  .photo-wrap:hover .expand{opacity:1}
+  .expand svg{width:12px;height:12px}
+  @media(hover:none){.expand{opacity:1}}
+</style>
+<link rel="stylesheet" href="/static/agro-ui.css" />
+<script src="/static/agro-ui.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13C4 7 9 3 20 3c0 11-4 16-9 16Z"/><path d="M4 21c2-5 5-8 9-10"/></svg></div>
+    <div>
+      <h1>Expert Review</h1>
+      <div class="sub">Confirm each leaf — your label trains AgroCure</div>
+    </div>
+    <div class="ui-controls" style="margin-left:auto">
+      <a class="icon-btn" href="/" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10.5 9-7 9 7"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-6h5v6"/></svg></a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme"></button>
+      <button class="icon-btn mode-toggle" type="button" data-mode-toggle aria-label="Presentation mode"></button>
+      <div class="count" id="count"><span class="led"></span><span class="n" id="countN">—</span> waiting</div>
+    </div>
+  </header>
+  <div class="nav"><a href="/app">← Back to AgroCure</a><span>Shortcuts: <kbd>A</kbd> approve · <kbd>S</kbd> skip</span></div>
+
+  <div id="list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="lightbox" id="lightbox"><span class="x">✕</span><img id="lbImg" alt="full scan" /></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const pct = v => Math.round((v || 0) * 100) + "%";
+let taxonomy = [], PLANTS = [], DISEASES = [];
+
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1900); }
+
+const lb = $("#lightbox"), lbImg = $("#lbImg");
+function openLightbox(src){ if (!src) return; lbImg.src = src; lb.classList.add("show"); }
+lb.addEventListener("click", () => lb.classList.remove("show"));
+document.addEventListener("keydown", e => { if (e.key === "Escape") lb.classList.remove("show"); });
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+
+// Tell the user app a case is actively being reviewed → powers "Under review".
+function claim(id){ fetch("/api/claim", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({id})}).catch(()=>{}); }
+
+// Searchable dropdown over a controlled list (prevents typos/duplicates).
+function makeDropdown(host, options, placeholder, kind, onChange){
+  const wrap = document.createElement("div"); wrap.className = "dd";
+  wrap.innerHTML = `
+    <button type="button" class="dd-btn"><span class="dd-val">${placeholder}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="dd-panel">
+      <input class="dd-search" placeholder="Search or type a new ${kind}…" />
+      <div class="dd-list"></div>
+    </div>`;
+  host.appendChild(wrap);
+  const btn = wrap.querySelector(".dd-btn"), valEl = wrap.querySelector(".dd-val"),
+        search = wrap.querySelector(".dd-search"), list = wrap.querySelector(".dd-list");
+  let value = "";
+  function commit(raw){
+    const v = (raw || "").trim(); if (!v) return;
+    const ex = options.find(o => o.toLowerCase() === v.toLowerCase());
+    const final = ex || v; if (!ex) options.push(final);
+    value = final; valEl.textContent = final; valEl.classList.add("set");
+    close(); if (onChange) onChange();
+  }
+  function render(){
+    const q = search.value.trim(), ql = q.toLowerCase();
+    const matches = options.filter(o => o.toLowerCase().includes(ql)).sort();
+    let html = matches.map(o => `<div class="dd-opt" data-v="${esc(o)}">${esc(o)}</div>`).join("");
+    if (q && !options.some(o => o.toLowerCase() === ql))
+      html += `<div class="dd-add" data-add>➕ Add new ${kind}: “${esc(q)}”</div>`;
+    list.innerHTML = html || `<div class="dd-empty">No matches.</div>`;
+    list.querySelectorAll(".dd-opt").forEach(it => it.onclick = () => commit(it.dataset.v));
+    const add = list.querySelector("[data-add]"); if (add) add.onclick = () => commit(search.value);
+  }
+  function open(){ search.value = ""; wrap.classList.add("open"); render(); search.focus(); }
+  function close(){ wrap.classList.remove("open"); }
+  btn.onclick = () => wrap.classList.contains("open") ? close() : open();
+  search.oninput = render;
+  search.onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); commit(search.value); } else if (e.key === "Escape") close(); };
+  document.addEventListener("click", e => { if (!wrap.contains(e.target)) close(); });
+  return { value: () => value, set: commit };
+}
+
+async function load(){
+  let pending, tax;
+  try{
+    [pending, tax] = await Promise.all([
+      fetch("/api/pending").then(r => r.json()),
+      fetch("/api/taxonomy").then(r => r.json()),
+    ]);
+  }catch(e){
+    $("#list").innerHTML = `<div class="off">Could not reach the database. Is the server connected to Supabase?</div>`;
+    return;
+  }
+  taxonomy = tax || [];
+  PLANTS   = [...new Set(taxonomy.map(t => t.plant))].sort();
+  DISEASES = ["Healthy", ...[...new Set(taxonomy.map(t => t.disease))].filter(d => d.toLowerCase() !== "healthy").sort()];
+
+  $("#countN").textContent = pending.length;
+  const list = $("#list");
+  if (!pending.length){
+    list.innerHTML = `<div class="empty"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span><h2>All caught up</h2><p>No leaves waiting for review right now.</p></div>`;
+    return;
+  }
+  list.innerHTML = "";
+  pending.forEach((p, i) => renderCard(p, i === 0));
+}
+
+function renderCard(p, isTop){
+  const el = document.createElement("div");
+  el.className = "card";
+  const reviewing = p.status === "reviewing";
+  el.innerHTML = `
+    <div class="ctop">
+      <div class="photo-wrap" data-photo>
+        <img class="photo" src="${p.image_url || ''}" alt="leaf scan" />
+        <span class="expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Full size</span>
+      </div>
+      <div>
+        ${reviewing ? `<span class="badge review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg> Under review</span>` : ``}
+        <div class="guess">AI's best read: <b>${p.model_plant || '?'}${p.model_disease ? ' · ' + p.model_disease : ''}</b></div>
+        <div class="conf-line"><div class="conf-mini"><i style="width:${pct(p.confidence)}"></i></div><span class="ctxt">${pct(p.confidence)} confidence — needs a human</span></div>
+        <details class="signals"><summary>AI signals</summary>
+          <div class="scores">
+            <span class="pill">conf ${pct(p.confidence)}</span>
+            <span class="pill">known ${pct(p.known_plant_score)}</span>
+            <span class="pill">CLIP: ${p.clip_plant || '—'}</span>
+          </div>
+        </details>
+        <div class="dup" data-dup></div>
+      </div>
+    </div>
+
+    <div class="nb"><div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Visually similar in the library — tap to fill</div><div class="nb-row" data-nb>Loading…</div></div>
+
+    <div class="label-zone">
+      <div class="lz-head">Your verdict</div>
+      <div class="suggest" data-suggest><span class="sg-lbl">Quick fill:</span></div>
+      <div class="fields">
+        <div class="field"><label>Plant</label><div data-plant-dd></div></div>
+        <div class="field"><label>Disease (or “Healthy”)</label><div data-disease-dd></div></div>
+      </div>
+      <div class="verify" data-verify>
+        <span class="vi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+        <div><div class="vt">You're confirming</div><div class="vv" data-verify-txt>Pick a plant and disease above</div></div>
+      </div>
+      <div class="btns">
+        <button class="act skip" data-skip>Skip</button>
+        <button class="act approve" data-approve disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Confirm label</button>
+      </div>
+    </div>`;
+  $("#list").appendChild(el);
+  const pw = el.querySelector("[data-photo]"), pimg = el.querySelector(".photo");
+  if (pimg.complete && pimg.naturalWidth) pw.classList.add("loaded");
+  pimg.addEventListener("load", () => pw.classList.add("loaded"));
+  pimg.addEventListener("error", () => { pw.classList.remove("loaded"); pw.classList.add("failed"); pw.textContent = "Image unavailable"; });
+  el.querySelectorAll(".photo, .expand").forEach(x => x.addEventListener("click", () => openLightbox(p.image_url)));
+
+  // claim → "Under review" for the user: top card on load, plus on first interaction
+  let claimed = reviewing;
+  const doClaim = () => { if (!claimed){ claimed = true; claim(p.id); el.classList.add("focus"); } };
+  if (isTop) doClaim();
+  el.addEventListener("focusin", doClaim, { once:false });
+  el.addEventListener("pointerdown", () => el.classList.add("focus"));
+
+  const verify = el.querySelector("[data-verify]"), verifyTxt = el.querySelector("[data-verify-txt]"),
+        approveBtn = el.querySelector("[data-approve]");
+  function refreshVerify(){
+    const plant = plantDD.value(), disease = diseaseDD.value();
+    if (plant && disease){
+      const known = taxonomy.some(t => t.plant.toLowerCase() === plant.toLowerCase() && t.disease.toLowerCase() === disease.toLowerCase());
+      verify.classList.add("ready");
+      verifyTxt.innerHTML = `${esc(plant)} — ${esc(disease)}` + (known ? "" : `<span class="new">new class</span>`);
+      approveBtn.disabled = false;
+    } else {
+      verify.classList.remove("ready");
+      verifyTxt.textContent = "Pick a plant and disease above";
+      approveBtn.disabled = true;
+    }
+  }
+
+  const plantDD   = makeDropdown(el.querySelector("[data-plant-dd]"), PLANTS, "Select plant", "plant", () => { doClaim(); refreshVerify(); });
+  const diseaseDD = makeDropdown(el.querySelector("[data-disease-dd]"), DISEASES, "Select disease", "disease", () => { doClaim(); refreshVerify(); });
+  const suggest = el.querySelector("[data-suggest]");
+
+  const addChip = (label, plant, cls = "") => {
+    const b = document.createElement("span");
+    b.className = "sg " + cls; b.textContent = label;
+    b.addEventListener("click", () => { plantDD.set(plant); });
+    suggest.appendChild(b);
+  };
+  if (p.clip_plant)  addChip(`CLIP: ${p.clip_plant}`, p.clip_plant, "clip");
+  if (p.model_plant) addChip(`AI: ${p.model_plant}`, p.model_plant);
+
+  fetch(`/api/neighbors?id=${p.id}`).then(r => r.json()).then(nb => {
+    const row = el.querySelector("[data-nb]");
+    if (!nb || !nb.length){ row.textContent = "No similar images yet."; return; }
+    row.innerHTML = nb.map(n => `
+      <div class="nb-item" data-fill data-p="${esc(n.plant)}" data-d="${esc(n.disease)}">
+        <img src="${n.image_url}" onerror="this.style.opacity=.3"/>
+        <div class="cap"><b>${pct(n.similarity)}</b>${esc(n.plant)}<br>${esc(n.disease)}</div>
+      </div>`).join("");
+    row.querySelectorAll("[data-fill]").forEach(it =>
+      it.addEventListener("click", () => { plantDD.set(it.dataset.p); diseaseDD.set(it.dataset.d); }));
+    [...new Set(nb.map(n => n.plant))].slice(0, 3).forEach(pl => addChip(pl, pl));
+    if (nb[0] && nb[0].similarity >= 0.999){
+      const dd = el.querySelector("[data-dup]");
+      dd.textContent = `⚠ Possible duplicate — a near-identical image is already labeled “${nb[0].plant} — ${nb[0].disease}”.`;
+      dd.classList.add("show");
+    }
+  }).catch(() => { el.querySelector("[data-nb]").textContent = "—"; });
+
+  approveBtn.addEventListener("click", async () => {
+    const plant = plantDD.value(), disease = diseaseDD.value();
+    if (!plant || !disease){ toast("Select a plant and disease first"); return; }
+    const known = taxonomy.some(t => t.plant.toLowerCase() === plant.toLowerCase() && t.disease.toLowerCase() === disease.toLowerCase());
+    if (!known && !confirm(`“${plant} — ${disease}” is a new class not seen before.\nAdd it to the library?`)) return;
+    approveBtn.disabled = true;
+    const r = await fetch("/api/label", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({id:p.id, plant, disease})});
+    if (r.ok){ el.style.transition="opacity .3s,transform .3s"; el.style.opacity="0"; el.style.transform="translateX(20px)";
+      setTimeout(()=>el.remove(),280); toast(`Saved: ${plant} — ${disease}`); bumpCount(-1); }
+    else { toast("Save failed"); approveBtn.disabled = false; }
+  });
+  el.querySelector("[data-skip]").addEventListener("click", async () => {
+    await fetch("/api/skip", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({id:p.id})});
+    el.remove(); toast("Skipped"); bumpCount(-1);
+  });
+}
+
+function bumpCount(d){
+  const n = Math.max(0, (parseInt($("#countN").textContent) || 0) + d);
+  $("#countN").textContent = n;
+  if (n === 0) load();
+}
+
+// A = approve, S = skip on the top card (ignored while typing)
+document.addEventListener("keydown", e => {
+  const t = (e.target.tagName || "").toLowerCase();
+  if (t === "input" || t === "textarea" || e.target.isContentEditable || lb.classList.contains("show")) return;
+  if (e.key === "a" || e.key === "A"){ const b = document.querySelector(".card [data-approve]"); if (b && !b.disabled){ e.preventDefault(); b.click(); } }
+  else if (e.key === "s" || e.key === "S"){ const b = document.querySelector(".card [data-skip]"); if (b){ e.preventDefault(); b.click(); } }
+});
+
+load();
+</script>
+</body>
+</html>

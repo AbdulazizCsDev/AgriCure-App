@@ -1,0 +1,19 @@
+{
+  "plant": "Corn-Maize",
+  "disease_labels": [
+    "Corn-Maize | Leaf Disease",
+    "Corn-Maize | Rust",
+    "Corn-Maize | Streak",
+    "Corn-Maize | Stripe",
+    "Corn-Maize | Yellowing"
+  ],
+  "disease_to_idx": {
+    "Corn-Maize | Leaf Disease": 0,
+    "Corn-Maize | Rust": 1,
+    "Corn-Maize | Streak": 2,
+    "Corn-Maize | Stripe": 3,
+    "Corn-Maize | Yellowing": 4
+  },
+  "best_val_loss": 0.19116615636214132,
+  "best_epoch": 26
+}

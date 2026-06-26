@@ -1,0 +1,7 @@
+# Light app server (proxy mode) — no torch/CLIP. The model lives in a separate
+# service pointed to by MODEL_API_URL. Used by the Dockerfile for deployment.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+requests>=2.31
+openai>=1.0

@@ -1,0 +1,127 @@
+/* ════════════════════════════════════════════════════════════════════════
+   AgroCure shared UI layer — light/dark themes, presentation mode, controls.
+   The dark palette lives in each page's :root (the default). Here we only add
+   the light overrides, the smooth theme-switch crossfade, presentation mode,
+   and the header control buttons.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light theme ──────────────────────────────────────────────────────── */
+[data-theme="light"]{
+  /* calmer, sage-tinted light theme (not stark white) */
+  --bg:#dde9e0; --surface:#ffffff; --surface-2:#eef5f0; --surface-hi:#e2efe8;
+  --glass-line:rgba(16,90,60,.18); --line:#cfe0d5;
+  --ink:#0c2418; --ink-2:#345246; --muted:#5f7e6f;
+  --accent:#0f9d6b; --accent-2:#10b981; --accent-deep:#047857; --accent-ink:#04140d;
+  --lime:#4d9d0f; --mint:#1fae7a; --sun:#c98a00;
+  --danger:#c0392b; --danger-bg:#fdecea; --danger-line:#f1c6c1;
+  --warn:#9a6300; --warn-bg:#fbf2dc; --warn-line:#ecd9a8;
+  --info:#1f6fb2;
+  --shadow:0 22px 55px -32px rgba(18,60,40,.4);
+  color-scheme:light;
+}
+/* ambient backdrop: soft sage with colourful mint/teal/lime glow, same drift as dark */
+[data-theme="light"] .garden{background:
+  radial-gradient(80% 70% at 12% 2%, rgba(16,185,129,.24), transparent 55%),
+  radial-gradient(85% 75% at 88% 8%, rgba(45,212,191,.22), transparent 55%),
+  radial-gradient(70% 80% at 70% 100%, rgba(132,204,22,.18), transparent 55%),
+  radial-gradient(140% 130% at 50% -10%, #eef8f1 0%, #cfe3d6 60%, #c1dbca 100%)}
+[data-theme="light"] .garden .blob{opacity:.34 !important;filter:blur(82px)}
+[data-theme="light"] .garden::after{background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(120,160,138,.2) 100%)}
+[data-theme="light"] body{background:var(--bg)}
+/* keep the falling-leaf motion clearly visible on light */
+[data-theme="light"] .journey{opacity:.66}
+[data-theme="light"] .leaf-fall span,[data-theme="light"] .leaf-rise span{filter:drop-shadow(0 3px 5px rgba(20,60,40,.2))}
+/* dashboard body gradient softened for light */
+[data-theme="light"] .dd-panel{background:var(--surface)}
+[data-theme="light"] .lightbox{background:rgba(20,40,30,.6)}
+[data-theme="light"] .msg.me{color:#fff}
+[data-theme="light"] ::selection{background:rgba(15,157,107,.18)}
+
+/* index.html uses some fixed dark surfaces — make them light-aware */
+[data-theme="light"] .card{background:linear-gradient(160deg,rgba(255,255,255,.44),rgba(240,248,243,.26));
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.6)}
+[data-theme="light"] .card::before{background:linear-gradient(160deg,rgba(255,255,255,.5),transparent 24%)}
+[data-theme="light"] .drop{background:rgba(255,255,255,.4)}
+[data-theme="light"] .drop:hover,[data-theme="light"] .drop.over{background:#e9f5ee}
+[data-theme="light"] .cap-btn{background:var(--surface-2)}
+[data-theme="light"] .cap-btn:hover{background:#e9f5ee}
+[data-theme="light"] .status{background:rgba(255,255,255,.78)}
+[data-theme="light"] .track{background:#e2efe7}
+[data-theme="light"] .chat-input textarea{background:#ffffff}
+[data-theme="light"] .chat-feed .msg.bot{background:var(--surface-hi)}
+[data-theme="light"] .qchip{background:var(--surface-2)}
+[data-theme="light"] .typing{background:var(--surface-hi)}
+
+/* ── Smooth, flicker-free theme switch ───────────────────────────────── */
+html.theming, html.theming *, html.theming *::before, html.theming *::after{
+  transition:background-color .42s ease, color .42s ease, border-color .42s ease, fill .42s ease, box-shadow .42s ease !important;
+}
+
+/* ── Header controls (theme + presentation toggles) ──────────────────── */
+.ui-controls{display:inline-flex;align-items:center;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+  background:rgba(127,180,150,.08);border:1px solid var(--glass-line);color:var(--ink-2);
+  transition:color .2s var(--ease-out,ease),border-color .2s,background .2s,transform .12s}
+.icon-btn svg{width:19px;height:19px;transition:transform .4s var(--spring,ease)}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent);background:rgba(52,211,153,.1)}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn[aria-pressed="true"]{color:var(--accent-ink);background:linear-gradient(150deg,var(--lime),var(--accent-deep));border-color:transparent}
+.icon-btn.mode-toggle{display:none}            /* desktop-only, shown via media query */
+@media (min-width:1024px){ .icon-btn.mode-toggle{display:grid} }
+
+/* ════════════════════════════════════════════════════════════════════════
+   PRESENTATION MODE — desktop/laptop only. Bigger, calmer, read-from-afar.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (min-width:1024px){
+  html[data-mode="present"] .wrap{max-width:960px}
+  html[data-mode="present"] .card{padding:38px;border-radius:30px;margin-bottom:26px}
+  html[data-mode="present"] .card-title{font-size:1rem;letter-spacing:.08em;margin-bottom:22px}
+  html[data-mode="present"] .card-title .ic{width:34px;height:34px}
+  html[data-mode="present"] .card-title .ic svg{width:19px;height:19px}
+
+  html[data-mode="present"] .brand h1{font-size:2rem}
+  html[data-mode="present"] .brand .tag{font-size:1rem}
+  html[data-mode="present"] .logo{width:60px;height:60px;border-radius:18px}
+  html[data-mode="present"] .logo svg{width:34px;height:34px}
+
+  html[data-mode="present"] .drop{padding:46px 26px}
+  html[data-mode="present"] .drop .glyph{width:74px;height:74px}
+  html[data-mode="present"] .drop .glyph svg{width:38px;height:38px}
+  html[data-mode="present"] .drop strong{font-size:1.2rem}
+  html[data-mode="present"] .drop small{font-size:.95rem}
+  html[data-mode="present"] .cap-btn{min-height:60px;font-size:1.08rem}
+  html[data-mode="present"] .cap-btn svg{width:22px;height:22px}
+  html[data-mode="present"] .btn{min-height:68px;font-size:1.25rem;border-radius:20px}
+  html[data-mode="present"] .btn svg{width:23px;height:23px}
+
+  html[data-mode="present"] .idle{padding:46px 16px}
+  html[data-mode="present"] .idle .leaf{width:96px;height:96px}
+  html[data-mode="present"] .idle .leaf svg{width:46px;height:46px}
+  html[data-mode="present"] .idle h2{font-size:1.6rem}
+  html[data-mode="present"] .idle p{font-size:1.1rem;max-width:40ch}
+  html[data-mode="present"] .idle .trust{font-size:.95rem;padding:10px 18px}
+
+  html[data-mode="present"] .verdict .disease{font-size:2.6rem}
+  html[data-mode="present"] .chip{font-size:1rem;padding:7px 16px}
+  html[data-mode="present"] .vstatus{font-size:1rem;padding:9px 17px}
+  html[data-mode="present"] .meter .mrow{font-size:1rem}
+  html[data-mode="present"] .advice-item .txt{font-size:1.02rem}
+  html[data-mode="present"] .advice-item .lbl{font-size:.88rem}
+
+  html[data-mode="present"] .scan-head .t{font-size:1.3rem}
+  html[data-mode="present"] .scan-head .pct{font-size:1.5rem}
+  html[data-mode="present"] .plabel{font-size:1.1rem}
+  html[data-mode="present"] .pdot{width:38px;height:38px}
+  html[data-mode="present"] .pipe::before,html[data-mode="present"] .pipe-fill{left:25px}
+
+  html[data-mode="present"] .msg{font-size:1.05rem;max-width:80%}
+  html[data-mode="present"] .qchip{font-size:.95rem;padding:9px 16px}
+  html[data-mode="present"] .chat-input textarea{font-size:1.05rem;min-height:54px}
+  html[data-mode="present"] .chat-send{width:54px;height:54px}
+
+  /* strip non-essential chrome so the workflow is the only focus */
+  html[data-mode="present"] .status,
+  html[data-mode="present"] footer,
+  html[data-mode="present"] .hint-line,
+  html[data-mode="present"] details.signals{display:none !important}
+}

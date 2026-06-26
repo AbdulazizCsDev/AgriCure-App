@@ -1,0 +1,15 @@
+{
+  "plant": "Tomato",
+  "disease_labels": [
+    "Tomato | Blight",
+    "Tomato | Leaf Mold",
+    "Tomato | Viral Disease"
+  ],
+  "disease_to_idx": {
+    "Tomato | Blight": 0,
+    "Tomato | Leaf Mold": 1,
+    "Tomato | Viral Disease": 2
+  },
+  "best_val_loss": 0.20394347413726474,
+  "best_epoch": 14
+}
