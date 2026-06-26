@@ -10,7 +10,6 @@ __pycache__/
 *.pyc
 inference_v4.py
 plant_gate.py
-seed_import.py
-seed_supported.py
+seed_library.py
 static/index.old.html
 supabase/

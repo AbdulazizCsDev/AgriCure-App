@@ -146,7 +146,28 @@ The review queue, similarity library, taxonomy, and cached advice live in Supaba
 Apply the SQL in `supabase/migrations/` (in order) to a fresh project, then set
 `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` in `.env`. See
 [`supabase/README.md`](supabase/README.md) and [`SHARE_DATABASE_GUIDE.md`](SHARE_DATABASE_GUIDE.md)
-for the schema, the `pgvector` similarity function, and how to seed the library.
+for the schema and the `pgvector` similarity function.
+
+### Seeding the similarity library
+
+`seed_library.py` populates `labeled_images` with CLIP embeddings so the similarity
+search has something to match against. It reads a `.zip` or a folder of
+`Plant_Disease/<image>` subfolders, and uses the **same** CLIP embed path as inference.
+
+```bash
+# Preview coverage — no DB, no models, no writes:
+python seed_library.py --data path/to/dataset.zip --dry-run
+
+# Seed the 16 supported classes (point --data at the training dataset):
+python seed_library.py --data path/to/training_dataset.zip --which supported
+
+# Extend coverage with open-set / unknown classes:
+python seed_library.py --data path/to/agro-mind.zip --which unknown
+```
+
+It is **idempotent** (skips images already seeded by SHA) and writes only
+`embed_clip`. The `--dry-run` coverage report shows which of the 16 supported plants
+are present in the dataset, so you can confirm coverage before a real run.
 
 ## Layout
 ```
@@ -158,8 +179,7 @@ backend/
 ├── db.py               Supabase REST helpers + .env loader
 ├── config_v4.py        class maps, plant→disease taxonomy, paths
 ├── finetune_stage1.py  Stage-1 fine-tuning script
-├── seed_import.py      seed similarity library with new/unknown classes
-├── seed_supported.py   seed similarity library with the 16 supported classes
+├── seed_library.py     seed the similarity library (CLIP) — has --dry-run + --which
 ├── models/             7 .pth weights + calibration/info JSONs (Git LFS)
 ├── static/             web UI (landing, app, dashboard, requests)
 ├── supabase/migrations 7 SQL migrations (pgvector schema, taxonomy, review fns)
