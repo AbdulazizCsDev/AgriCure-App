@@ -69,9 +69,18 @@ def supported_set() -> set:
 
 
 def parse_class(parent: str):
-    """`Tomato_Leaf Mold` → ('Tomato', 'Leaf Mold')."""
-    plant, disease = parent.split("_", 1) if "_" in parent else (parent, "")
-    return plant, disease
+    """`Tomato--Leaf Mold` or `Tomato_Leaf Mold` -> ('Tomato', 'Leaf Mold').
+
+    Accepts both the canonical `Plant--Disease` (config.FOLDER_SEP) and the
+    open-set `Plant_Disease` folder conventions.
+    """
+    if config.FOLDER_SEP in parent:          # "Plant--Disease"
+        plant, disease = parent.split(config.FOLDER_SEP, 1)
+    elif "_" in parent:                       # "Plant_Disease"
+        plant, disease = parent.split("_", 1)
+    else:
+        plant, disease = parent, ""
+    return plant.strip(), disease.strip()
 
 
 # ── Dataset readers: a .zip or a plain folder, same interface ──────────────────
@@ -104,7 +113,9 @@ def iter_dataset(path):
     sys.exit(f"--data must be a .zip or a folder: {path}")
 
 
-def select(plant, disease, which, supported):
+def select(plant, disease, which, supported, only_plants=None):
+    if only_plants is not None and norm(plant) not in only_plants:
+        return False
     pair = (norm(plant), norm(disease))
     if which == "supported":
         return pair in supported
@@ -113,12 +124,12 @@ def select(plant, disease, which, supported):
     return True  # all
 
 
-def scan(path, which, supported):
+def scan(path, which, supported, only_plants=None):
     """Group selected images by class without loading models. Returns {class: [readers]}."""
     by_class = {}
     for parent, name, reader in iter_dataset(path):
         plant, disease = parse_class(parent)
-        if not select(plant, disease, which, supported):
+        if not select(plant, disease, which, supported, only_plants):
             continue
         by_class.setdefault(parent, []).append((name, reader))
     return by_class
@@ -152,6 +163,8 @@ def main():
     ap.add_argument("--data", default=os.environ.get("AGRICURE_SEED_ZIP"),
                     help="dataset .zip or folder (or set $AGRICURE_SEED_ZIP)")
     ap.add_argument("--which", choices=["all", "supported", "unknown"], default="all")
+    ap.add_argument("--plants", default=None,
+                    help="comma-separated plant names to restrict to (e.g. 'Cassava,Squash')")
     ap.add_argument("--dry-run", action="store_true", help="report only, write nothing")
     ap.add_argument("--limit", type=int, default=0, help="cap images per class (0 = no cap)")
     args = ap.parse_args()
@@ -161,9 +174,14 @@ def main():
     if not os.path.exists(args.data):
         sys.exit(f"--data not found: {args.data}")
 
+    only_plants = None
+    if args.plants:
+        only_plants = {norm(p) for p in args.plants.split(",") if p.strip()}
+
     supported = supported_set()
-    print(f"Scanning {args.data}  (which={args.which}) ...", flush=True)
-    by_class = scan(args.data, args.which, supported)
+    print(f"Scanning {args.data}  (which={args.which}"
+          f"{', plants=' + args.plants if args.plants else ''}) ...", flush=True)
+    by_class = scan(args.data, args.which, supported, only_plants)
     if args.limit:
         by_class = {k: v[: args.limit] for k, v in by_class.items()}
     coverage_report(by_class, supported)

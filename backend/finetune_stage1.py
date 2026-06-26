@@ -29,10 +29,19 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, models
 from PIL import Image
 
-# ── EDIT THESE PATHS IF NEEDED ──────────────────────────────────────────────
-FULL_DATASET = r"C:\Users\Aziz\Downloads\FINAL_DATASET"          # 16 plants (Plant--Disease folders)
-LEMON_ZIP    = r"C:\Users\Aziz\Downloads\lemon_dataset_jpg.zip"  # the new plant's images
-NEW_PLANT    = "Lemon"
+# ── Dataset paths — set via env vars (no hardcoded local paths) ─────────────
+#   AGRICURE_DATASET        folder of the 16 plants (Plant--Disease subfolders)
+#   AGRICURE_NEW_PLANT_ZIP  zip of the new plant's images
+#   AGRICURE_NEW_PLANT      new plant name (default: Lemon)
+SMOKE        = bool(os.environ.get("SMOKE"))
+FULL_DATASET = os.environ.get("AGRICURE_DATASET", "")
+LEMON_ZIP    = os.environ.get("AGRICURE_NEW_PLANT_ZIP", "")
+NEW_PLANT    = os.environ.get("AGRICURE_NEW_PLANT", "Lemon")
+
+_missing = [n for n, v in (("AGRICURE_DATASET", FULL_DATASET),
+                           ("AGRICURE_NEW_PLANT_ZIP", LEMON_ZIP)) if not v]
+if _missing and not SMOKE:
+    raise SystemExit("Set these env var(s) before running: " + ", ".join(_missing))
 
 BASE   = os.path.dirname(os.path.abspath(__file__))
 MODELS = os.path.join(BASE, "models")
@@ -44,7 +53,6 @@ EXISTING_CLS = os.path.join(MODELS, "stage1_class_names.json")
 EPOCHS, BATCH, IMG = 10, 32, 224
 BACKBONE_LR, HEAD_LR, WD, DROPOUT = 1e-4, 1e-3, 1e-4, 0.3
 VAL_FRAC, SEED = 0.15, 42
-SMOKE = bool(os.environ.get("SMOKE"))
 
 random.seed(SEED); torch.manual_seed(SEED)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
